@@ -19,6 +19,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import java.time.LocalDateTime
 
 
@@ -42,6 +45,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initServices()
         GPSPermission()
+
+        MobileAds.initialize(
+            this
+        ) { }
+
+        val mAdView = findViewById<AdView> (R.id.adView)
+        val adRequest = AdRequest.Builder (). build ()
+        mAdView.loadAd (adRequest)
     }
 
     fun GPSPermission(){
@@ -93,37 +104,41 @@ class MainActivity : AppCompatActivity() {
 
 
         val eastsouthwestnorth_dialog = AlertDialog.Builder(this@MainActivity)
+        val SnDegree = findViewById<TextView>(R.id.TextSnDegree)
+        val ArrowOne = findViewById<TextView>(R.id.ArrowOne)
         val textViewUp = findViewById<TextView>(R.id.myTextUp)
         val textViewDown = findViewById<TextView>(R.id.myTextDown)
         val textViewRight = findViewById<TextView>(R.id.myTextRight)
         val textViewLeft = findViewById<TextView>(R.id.myTextLeft)
         //根据角度计算方位
         val sn_degree =  ((values[0]+ 720) % 360).toInt()
+        SnDegree.text = sn_degree.toString()
+        ArrowOne.rotation = 90-(sn_degree).toFloat()
         if (sn_degree >= 135 && sn_degree <= 225) {
             // south
             eastsouthwestnorth_dialog.setTitle("南" + sn_degree.toString())
-            textViewUp.text = "南" + "\n"+sn_degree.toString()
+            textViewUp.text = "南"
             textViewDown.text = "北"
             textViewRight.text = "西"
             textViewLeft.text = "東"
         } else if (sn_degree >= 315 || sn_degree <= 45) {
             // north
             eastsouthwestnorth_dialog.setTitle("北" + sn_degree.toString())
-            textViewUp.text = "北" + "\n"+sn_degree.toString()
+            textViewUp.text = "北"
             textViewDown.text = "南"
             textViewRight.text = "東"
             textViewLeft.text = "西"
         } else if (sn_degree > 45 && sn_degree < 135) {
             //east
             eastsouthwestnorth_dialog.setTitle("東" + sn_degree.toString())
-            textViewUp.text = "東" + "\n"+sn_degree.toString()
+            textViewUp.text = "東"
             textViewDown.text = "西"
             textViewRight.text = "南"
             textViewLeft.text = "北"
         } else if (sn_degree > 225 && sn_degree < 315) {
             //west
             eastsouthwestnorth_dialog.setTitle("西" + sn_degree.toString())
-            textViewUp.text = "西" + "\n"+sn_degree.toString()
+            textViewUp.text = "西"
             textViewDown.text = "東"
             textViewRight.text = "北"
             textViewLeft.text = "南"
@@ -139,7 +154,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun randomElementUsingSequences(): String? {
-        val list = listOf("restaurant", "麵", "飯", "便利商店", "food")
+        var list = listOf("restaurant", "麵", "飯", "便利商店", "food", "咖哩", "飲料", "摩斯", "肯德基", "麥當勞", "pizza", "壽司", "牛排", "水餃")
         return list.asSequence().shuffled().find { true }
     }
 
