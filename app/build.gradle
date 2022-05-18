@@ -7,7 +7,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.example.compasssouth"
+        applicationId "com.poyen_chen0701.compasssouth"
         minSdk 28
         targetSdk 32
         versionCode 1

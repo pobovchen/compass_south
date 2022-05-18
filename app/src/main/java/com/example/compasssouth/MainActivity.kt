@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun randomElementUsingSequences(): String? {
-        var list = listOf("restaurant", "麵", "飯", "便利商店", "food", "咖哩", "飲料", "摩斯", "肯德基", "麥當勞", "pizza", "壽司", "牛排", "水餃")
+        var list = mutableListOf("restaurant", "麵", "飯", "便利商店", "food", "咖哩", "飲料", "摩斯", "肯德基", "麥當勞", "速食", "pizza", "壽司", "牛排", "水餃", "鍋貼", "八方雲集")
         return list.asSequence().shuffled().find { true }
     }
 
