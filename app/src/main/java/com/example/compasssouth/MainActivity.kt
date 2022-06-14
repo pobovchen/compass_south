@@ -1,7 +1,9 @@
 package com.example.compasssouth
 
 import android.Manifest
+import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -14,10 +16,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Html
 import android.text.method.LinkMovementMethod
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
@@ -39,6 +45,11 @@ class MainActivity : AppCompatActivity() {
     var oriLocation : Location? = null
     val permissionGranted = 11
     var LOCATION_PERMISSION:Boolean = false
+    private val TAG = "MainActivity"
+
+    companion object {
+        var cooklinglist : MutableList<String> = mutableListOf("牛肉", "拉麵", "restaurant", "麵", "飯", "便利商店", "food", "咖哩", "飲料", "摩斯", "肯德基", "麥當勞", "速食", "pizza", "壽司", "牛排", "水餃", "鍋貼", "八方雲集")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +64,36 @@ class MainActivity : AppCompatActivity() {
         val mAdView = findViewById<AdView> (R.id.adView)
         val adRequest = AdRequest.Builder (). build ()
         mAdView.loadAd (adRequest)
+
+        Log.w(TAG, "64");
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        if (menu is MenuBuilder) {
+            menu.setOptionalIconsVisible(true)
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                val intent = Intent(this, CookingSetActivity::class.java).apply {
+                    putExtra("26key", "26value")
+                }
+                startActivity(intent)
+                return true
+            }
+            // Otherwise, do nothing and use the core event handling
+
+            // when clauses require that all possible paths be accounted for explicitly,
+            // for instance both the true and false cases if the value is a Boolean,
+            // or an else to catch all unhandled cases.
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     fun GPSPermission(){
@@ -153,9 +194,31 @@ class MainActivity : AppCompatActivity() {
 //            .show()
     }
 
+
+
+    fun readcookinglist(): MutableList<String>{
+        var getcookinglist= getSharedPreferences("cookinglist", MODE_PRIVATE)
+            .getStringSet("cookinglist",setOf<String>())?.toMutableList()
+        if (getcookinglist != null && getcookinglist.size>0) {
+            cooklinglist = getcookinglist
+            return cooklinglist
+        }else{
+            Log.w(TAG, "208");
+            Log.w(TAG, cooklinglist.toString());
+            return cooklinglist
+        }
+    }
+
     fun randomElementUsingSequences(): String? {
-        var list = mutableListOf("restaurant", "麵", "飯", "便利商店", "food", "咖哩", "飲料", "摩斯", "肯德基", "麥當勞", "速食", "pizza", "壽司", "牛排", "水餃", "鍋貼", "八方雲集")
-        return list.asSequence().shuffled().find { true }
+        var list = readcookinglist()
+        Log.w(TAG, "180");
+        Log.w(TAG, list.toString());
+
+        if (list != null) {
+            return list.asSequence().shuffled().find { true }
+        }else{
+            return "172"
+        }
     }
 
     fun locationManager(){
@@ -210,6 +273,9 @@ class MainActivity : AppCompatActivity() {
 //            LocationText.text = latitudePluslongitude
 
             var randomElement:String? = randomElementUsingSequences()
+            Log.w(TAG, "239");
+            Log.w(TAG, randomElement.toString());
+
             val dynamicUrl = "https://www.google.com/maps/search/"+randomElement+"/@"+latitudePluslongitude+",18z"
             // or whatever you want, it's dynamic
             val linkedText = String.format("<a href=\"%s\">今天吃\"%s\"</a> ", dynamicUrl,randomElement)
