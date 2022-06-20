@@ -1,7 +1,6 @@
 package com.example.compasssouth
 
 import android.Manifest
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -49,6 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         var cooklinglist : MutableList<String> = mutableListOf("牛肉", "拉麵", "restaurant", "麵", "飯", "便利商店", "food", "咖哩", "飲料", "摩斯", "肯德基", "麥當勞", "速食", "pizza", "壽司", "牛排", "水餃", "鍋貼", "八方雲集")
+        var randomAlready : MutableList<String> = mutableListOf()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity() {
 
         Log.w(TAG, "64");
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -115,6 +114,14 @@ class MainActivity : AppCompatActivity() {
                 ),
                 permissionGranted
             )
+
+            if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                Log.w(TAG, "124");
+            }else{
+                Log.w(TAG, "126");
+                LOCATION_PERMISSION = true
+            }
+
 //            AlertDialog.Builder(this)
 //                .setTitle("提醒")
 //                .setMessage("請啟用位置權限")
@@ -124,15 +131,8 @@ class MainActivity : AppCompatActivity() {
 //                ) { dialog, which -> dialog.cancel() }
 //                .show()
         } else {
+            Log.w(TAG, "139");
             LOCATION_PERMISSION = true
-            ActivityCompat.requestPermissions(
-                this@MainActivity,
-                arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ),
-                permissionGranted
-            )
         }
     }
 
@@ -155,34 +155,56 @@ class MainActivity : AppCompatActivity() {
         val sn_degree =  ((values[0]+ 720) % 360).toInt()
         SnDegree.text = sn_degree.toString()
         ArrowOne.rotation = 90-(sn_degree).toFloat()
-        if (sn_degree >= 135 && sn_degree <= 225) {
+        var eastsouthwestnorth_list = listOf("東","東南","南","西南","西","西北","北","東北")
+        var eastsouthwestnorth_text_position = listOf(textViewUp,textViewRight,textViewDown,textViewLeft)
+
+        fun match_eastsouthwestnorth(start_index:Int){
+            var start_index=start_index
+            eastsouthwestnorth_text_position.forEach { item->
+                if( start_index >= eastsouthwestnorth_list.size){
+                    start_index -= eastsouthwestnorth_list.size
+                }
+                item.text =eastsouthwestnorth_list[start_index]
+                start_index += 2
+            }
+        }
+
+        if (sn_degree >= 165 && sn_degree <= 195) {
             // south
             eastsouthwestnorth_dialog.setTitle("南" + sn_degree.toString())
-            textViewUp.text = "南"
-            textViewDown.text = "北"
-            textViewRight.text = "西"
-            textViewLeft.text = "東"
-        } else if (sn_degree >= 315 || sn_degree <= 45) {
+            match_eastsouthwestnorth(2)
+            /*textViewUp.text = eastsouthwestnorth_list[2]
+            textViewRight.text = eastsouthwestnorth_list[4]
+            textViewDown.text = eastsouthwestnorth_list[6]
+            textViewLeft.text = eastsouthwestnorth_list[0]*/
+        } else if (sn_degree >= 345 || sn_degree <= 15) {
             // north
             eastsouthwestnorth_dialog.setTitle("北" + sn_degree.toString())
-            textViewUp.text = "北"
-            textViewDown.text = "南"
-            textViewRight.text = "東"
-            textViewLeft.text = "西"
-        } else if (sn_degree > 45 && sn_degree < 135) {
+            match_eastsouthwestnorth(6)
+        } else if (sn_degree >= 75 && sn_degree <= 105) {
             //east
             eastsouthwestnorth_dialog.setTitle("東" + sn_degree.toString())
-            textViewUp.text = "東"
-            textViewDown.text = "西"
-            textViewRight.text = "南"
-            textViewLeft.text = "北"
-        } else if (sn_degree > 225 && sn_degree < 315) {
+            match_eastsouthwestnorth(0)
+        } else if (sn_degree >= 255 && sn_degree <= 285) {
             //west
             eastsouthwestnorth_dialog.setTitle("西" + sn_degree.toString())
-            textViewUp.text = "西"
-            textViewDown.text = "東"
-            textViewRight.text = "北"
-            textViewLeft.text = "南"
+            match_eastsouthwestnorth(4)
+        } else if (sn_degree > 285 && sn_degree < 345) {
+            //west
+            eastsouthwestnorth_dialog.setTitle("西北" + sn_degree.toString())
+            match_eastsouthwestnorth(5)
+        } else if (sn_degree > 15 && sn_degree < 75) {
+            //west
+            eastsouthwestnorth_dialog.setTitle("東北" + sn_degree.toString())
+            match_eastsouthwestnorth(7)
+        } else if (sn_degree > 105 && sn_degree < 165) {
+            //west
+            eastsouthwestnorth_dialog.setTitle("東南" + sn_degree.toString())
+            match_eastsouthwestnorth(1)
+        } else if (sn_degree > 195 && sn_degree < 255) {
+            //west
+            eastsouthwestnorth_dialog.setTitle("西南" + sn_degree.toString())
+            match_eastsouthwestnorth(3)
         }
 
 
@@ -194,28 +216,34 @@ class MainActivity : AppCompatActivity() {
 //            .show()
     }
 
-
-
-    fun readcookinglist(): MutableList<String>{
-        var getcookinglist= getSharedPreferences("cookinglist", MODE_PRIVATE)
-            .getStringSet("cookinglist",setOf<String>())?.toMutableList()
-        if (getcookinglist != null && getcookinglist.size>0) {
-            cooklinglist = getcookinglist
-            return cooklinglist
-        }else{
-            Log.w(TAG, "208");
-            Log.w(TAG, cooklinglist.toString());
-            return cooklinglist
+    object readcookingUtils {
+        fun readcookinglist(context: Context): MutableList<String>{
+            var getcookinglist=context.getSharedPreferences("cookinglist", MODE_PRIVATE)
+                .getStringSet("cookinglist",setOf<String>())?.toMutableList()
+            if (getcookinglist != null && getcookinglist.size>0) {
+                cooklinglist = getcookinglist
+                return cooklinglist
+            }else{
+                return cooklinglist
+            }
         }
     }
 
     fun randomElementUsingSequences(): String? {
-        var list = readcookinglist()
-        Log.w(TAG, "180");
-        Log.w(TAG, list.toString());
-
+        var list = readcookingUtils.readcookinglist(this)
+        Log.w(TAG, "180")
+        Log.w(TAG, list.toString())
+        list.removeAll(randomAlready)
         if (list != null) {
-            return list.asSequence().shuffled().find { true }
+            var randomItemforcheck = list.asSequence().shuffled().find { true }.toString()
+            list.remove(randomItemforcheck)
+            randomAlready.add(randomItemforcheck)
+            if( list.size == 0){
+                randomAlready.clear()
+            }
+            /*Toast.makeText(this, list.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, randomAlready.toString(), Toast.LENGTH_SHORT).show()*/
+            return randomItemforcheck
         }else{
             return "172"
         }
@@ -283,7 +311,7 @@ class MainActivity : AppCompatActivity() {
             vWeb.setText(Html.fromHtml(linkedText))
             vWeb.setMovementMethod(LinkMovementMethod.getInstance())
         }else{
-            Toast.makeText(this, LocalDateTime.now().toString(), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, LocalDateTime.now().toString(), Toast.LENGTH_SHORT).show()
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,6000, 5f, locationListener)
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,6000, 5f, locationListener)
         }
@@ -309,6 +337,7 @@ class MainActivity : AppCompatActivity() {
         mLocationManager = getSystemService(LOCATION_SERVICE) as LocationManager
     }
 
+
     override fun onResume() {
         super.onResume()
         mOrientationListener = MySensorEventListener()
@@ -316,9 +345,14 @@ class MainActivity : AppCompatActivity() {
         mSensorManager.registerListener(mOrientationListener, mOrientationSensor, Sensor.TYPE_ACCELEROMETER)
         mSensorManager.registerListener(mMagneticListener, mMagneticSensor, SensorManager.SENSOR_DELAY_NORMAL)
         mStopDrawing = false
+//        Toast.makeText(this, onResumewhytwice.toString(), Toast.LENGTH_SHORT).show()
         if(LOCATION_PERMISSION){
             locationManager()
         }
+    }
+
+    override fun onBackPressed() {
+        finishAffinity();
     }
 
     override fun onPause() {

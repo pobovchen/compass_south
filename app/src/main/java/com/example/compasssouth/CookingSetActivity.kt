@@ -1,22 +1,20 @@
 package com.example.compasssouth
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import android.widget.*
-import android.widget.AdapterView.OnItemClickListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.menu.MenuBuilder
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.compasssouth.MainActivity.Companion.cooklinglist
 
 
 class CookingSetActivity : AppCompatActivity() {
-    lateinit var listView: ListView
-    var list: ArrayList<String> = ArrayList()
-    lateinit var arrayAdapter: ArrayAdapter<String>
+    private lateinit var mRecyclerView: RecyclerView
 
     lateinit var editText: EditText
     lateinit var button: Button
@@ -39,18 +37,18 @@ class CookingSetActivity : AppCompatActivity() {
         button.setOnClickListener {
             cooklinglist.add(editText.text.toString().trim())
             editText.setText("")
-            arrayAdapter.notifyDataSetChanged()
-            listView.adapter = arrayAdapter
         }
     }
 
     fun listviewadpterclickchange(){
-        listView = findViewById(R.id.listView)
-        arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, cooklinglist)
-        arrayAdapter.notifyDataSetChanged()
-        listView.adapter = arrayAdapter
+        mRecyclerView = findViewById(R.id.recycler_view)
+        mRecyclerView.layoutManager = GridLayoutManager(this,3)
+        var list = MainActivity.readcookingUtils.readcookinglist(this)
+        mRecyclerView.adapter = MainAdapter(list, this)
 
-        listView.onItemClickListener =
+
+
+/*        listView.onItemClickListener =
             OnItemClickListener { parent, view, position, id ->
                 val builder = AlertDialog.Builder(this)
                 builder.setMessage("Are you sure you want to Delete "+ cooklinglist[position] +"?")
@@ -67,7 +65,7 @@ class CookingSetActivity : AppCompatActivity() {
                     }
                 val alert = builder.create()
                 alert.show()
-            }
+            }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -105,4 +103,39 @@ class CookingSetActivity : AppCompatActivity() {
         savecookinglist()
     }
 
+}
+
+class MainAdapter(val items : MutableList<String>, var context: Context) : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val emoji_string: String = context.getResources().getString(R.string.emoji_wastebasket)
+        holder.textView.text = emoji_string+items[position]
+        holder.textView.setOnClickListener {
+            val builder = AlertDialog.Builder(context)
+            builder.setMessage("Are you sure you want to Delete "+ items[position] +"?")
+                .setCancelable(false)
+                .setPositiveButton("Yes") { dialog, id ->
+                    // Delete selected note from database
+                    Toast.makeText(context, "你刪除的是" + items[position], Toast.LENGTH_SHORT).show();
+                    cooklinglist.remove(items[position])
+                    notifyDataSetChanged()
+                }
+                .setNegativeButton("No") { dialog, id ->
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
+        }
+    }
+
+    class ViewHolder(val view: View) :  RecyclerView.ViewHolder(view) {
+        val textView = view.findViewById<TextView>(R.id.item_title)
+    }
 }

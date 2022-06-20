@@ -4,12 +4,16 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1855" />
+        <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/drawable/abc.xml" value="0.2215" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.2525" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/drawable/ic_baseline_navigation_24.xml" value="0.2215" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1855" />
+        <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/drawable/rounded_corner.xml" value="0.2215" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/layout/activity_cooking_set.xml" value="0.21920289855072464" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/layout/list_item.xml" value="0.27447916666666666" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/menu/menu.xml" value="0.27447916666666666" />
+        <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/menu/menu_main.xml" value="0.27447916666666666" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2525" />
         <entry key="..\:/D/AndroidStudioProjects/compasssouth/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2525" />
       </map>
